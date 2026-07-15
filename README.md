@@ -28,21 +28,21 @@ Three independent Spring Boot services communicate over Kafka, backed by Redis (
 
 ```mermaid
 flowchart TD
-    A[Driver's Phone] -->|location ping| B[Location Service :8082]
-    B --> C[(Redis Geospatial)]
+    A[Driver's Phone] -->|"POST /drivers/update every 3s"| B[Location Service :8082]
+    B -->|GEOADD| C[(Redis Geospatial)]
 
-    D[Rider App] -->|ride request| E[Ride Service :8083]
-    E --> F[(MySQL)]
-    E -->|ride.requested| G[[Kafka]]
+    D[Rider App] -->|"POST /rides/request"| E[Ride Service :8083]
+    E -->|persist ride, status=MATCHING| F[(MySQL)]
+    E -->|publish ride.requested| G[[Kafka]]
 
-    G --> H[Matching Service :8084]
-    H -->|nearby drivers?| B
-    B -->|candidates| H
-    H -->|scores + assigns driver| H
-    H -->|ride.matched| G
+    G -->|consume| H[Matching Service :8084]
+    H -->|"GET /drivers/nearby"| B
+    B -->|GEOSEARCH, top 10 by distance| H
+    H -->|score each driver: distance 70% + rating 30%| H
+    H -->|publish ride.matched| G
 
-    G --> E
-    E -->|assign driver| F
+    G -->|consume| E
+    E -->|update ride: driverId, status=ACCEPTED| F
 ```
 
 ### Sequence of a single ride request
