@@ -26,7 +26,7 @@ Originally built by following a Spring Boot tutorial series, then extended with 
 
 Three independent Spring Boot services communicate over Kafka, backed by Redis (driver locations) and MySQL (ride records).
 
-![Uploading image.png…]()
+<img src="https://app.eraser.io/workspace/QZZeDS1MVX8QpR3wWcFO/preview?figure=LqE59T2co7C_DccFG1Fbt&type=embed" /></a>
 
 
 ### Sequence of a single ride request
