@@ -95,15 +95,13 @@ public class MatchingService {
                     // Add 0.1 to avoid division by zero
                     double distanceScore = 1.0/(driver.getDistanceInKm() + 0.1);
 
-                    // Simulated rating between 4.0 and 5.0
-                    // In production: fetch from Driver Service
-
-                    double simulatedRating = 4.0 + Math.random();
+                    // Real rating, fetched from Redis via location-service
+                    double rating = driver.getRating();
 
                     //Final weighted score
                     return (distanceScore * distanceWeight)
-                           + (simulatedRating * ratingWeight);
-        }));
+                            + (rating * ratingWeight);
+                }));
     }
 
 }

@@ -12,4 +12,5 @@ public class NearByDriverResponse {
     private double latitude;
     private double longitude;
     private double distanceInKm;
+    private double rating;
 }
