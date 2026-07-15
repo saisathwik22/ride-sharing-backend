@@ -126,17 +126,12 @@ Only 45 meters separated these two drivers, but the ~1.3-point rating gap was en
 
 ## Design Decisions
 
-**Why Redis Geospatial instead of SQL for driver locations?**
-Redis stores geo data in a sorted set under the hood, so proximity queries (`GEOSEARCH`) run in roughly logarithmic time regardless of how many drivers exist. A naive SQL approach — calculating a Haversine distance for every row with no spatial index — scans the *entire* driver table on every single request, so query time grows linearly with driver count. At city scale (thousands of drivers, requests every few seconds), that difference compounds fast.
-
-**Why Kafka instead of a direct REST call from ride-service to matching-service?**
-Decouples the two services — `ride-service` doesn't need to know or care how matching happens, or wait synchronously for it to finish. It also means matching can be retried, scaled independently, or replaced entirely without touching ride-service's code.
-
-**Why a weighted score instead of pure nearest-driver?**
-Pure proximity matching is naive — a rider a few meters closer to a low-rated driver isn't necessarily better served than being matched with a slightly farther, well-rated one. The 70/30 split favors distance (since arrival time matters most) while still letting driver quality break close ties.
-
-**Why cap results to the nearest 10 (`.limit(10)`) before scoring?**
-Keeps the scoring step's cost constant regardless of total driver count in a dense area — Redis does the heavy filtering (distance), and the scoring algorithm only ever runs against a small, bounded candidate set.
+| Decision | Why |
+|---|---|
+| **Redis Geospatial**, not SQL, for driver locations | Redis stores geo data in a sorted set, so proximity queries (`GEOSEARCH`) run in roughly logarithmic time regardless of driver count. A naive SQL scan — Haversine distance per row, no spatial index — grows *linearly* with driver count. At city scale, that gap compounds fast. |
+| **Kafka**, not direct REST, between ride-service and matching-service | Decouples the two services — ride-service doesn't wait on matching to finish, and doesn't need to know how it works. Matching can be retried, scaled, or replaced independently. |
+| **Weighted score** (distance + rating), not nearest-only | Pure proximity matching is naive — a rider a few meters closer to a low-rated driver isn't better served than being matched with a slightly farther, well-rated one. 70/30 favors speed of arrival while letting quality break close ties. |
+| **Capped candidate pool** (top 10) before scoring | Keeps the scoring step's cost constant regardless of driver density. Redis handles the heavy filtering; scoring only ever runs against a small, bounded set. |
 
 ---
 
