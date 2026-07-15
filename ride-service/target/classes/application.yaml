@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/uberapp
     username: root
-    password: yeshendra33
+    password: Saisathwik2822
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 #JPA

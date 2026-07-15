@@ -19,6 +19,7 @@ public class Ride {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length = 36)
     private String id;
 
     // Who requested the ride

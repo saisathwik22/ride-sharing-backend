@@ -16,7 +16,7 @@
     <groupId>com.rideshare</groupId>
     <artifactId>ride-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <n>ride-service</n>
+
     <description>Ride Service for RideShare Platform</description>
 
     <properties>
