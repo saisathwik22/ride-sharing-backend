@@ -26,24 +26,8 @@ Originally built by following a Spring Boot tutorial series, then extended with 
 
 Three independent Spring Boot services communicate over Kafka, backed by Redis (driver locations) and MySQL (ride records).
 
-```mermaid
-flowchart TD
-    A[Driver's Phone] -->|"POST /drivers/update every 3s"| B[Location Service :8082]
-    B -->|GEOADD| C[(Redis Geospatial)]
+![Uploading image.png…]()
 
-    D[Rider App] -->|"POST /rides/request"| E[Ride Service :8083]
-    E -->|persist ride, status=MATCHING| F[(MySQL)]
-    E -->|publish ride.requested| G[[Kafka]]
-
-    G -->|consume| H[Matching Service :8084]
-    H -->|"GET /drivers/nearby"| B
-    B -->|GEOSEARCH, top 10 by distance| H
-    H -->|score each driver: distance 70% + rating 30%| H
-    H -->|publish ride.matched| G
-
-    G -->|consume| E
-    E -->|update ride: driverId, status=ACCEPTED| F
-```
 
 ### Sequence of a single ride request
 
